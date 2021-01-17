@@ -1,0 +1,8 @@
+<div class="container">
+    <h1>Templates:</h1>
+    <div *ngIf="templatesLoading$ | async">Loading...</div>
+    <div *ngIf="templatesLoadingError$ | async">Error! {{templatesLoadingError$}}</div>
+    <div *ngIf="templatesLoadingSuccess$ | async">
+        <div class="link" *ngFor="let template of (templates$ | async)" [routerLink]="template.id"><strong>{{template.name}}</strong></div>
+    </div>
+</div>

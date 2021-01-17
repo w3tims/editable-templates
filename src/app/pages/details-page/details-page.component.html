@@ -1,0 +1,18 @@
+<div class="container">
+    <div *ngIf="selectedTemplate$ | async; let selectedTemplate">
+        <div class="heading">
+            <div class="back-arrow" [routerLink]="'/'">◄</div>
+            <h1>{{selectedTemplate.name}}</h1>
+        </div>
+        <div #templateContainer [innerHTML]="selectedTemplate.template"></div>
+
+        <form [formGroup]="editPanelForm" *ngIf="selectedElement$ | async; let selectedElement" >
+            <textarea formControlName="text" name="" id="" cols="30" rows="10"></textarea>
+            <div>
+                <span>font-size:</span>
+                <input formControlName="fontSize" type="number" min="0" max="100">
+            </div>
+        </form>
+
+    </div>
+</div>

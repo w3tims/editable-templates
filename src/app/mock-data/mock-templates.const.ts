@@ -1,6 +1,6 @@
-import { IEditableTemplate } from '../typings/interfaces/editable-template.interface';
+import { ITemplate } from '../typings/interfaces/template.interface';
 
-export const editableTemplates: IEditableTemplate[] = [
+export const mockTemplates: ITemplate[] = [
     {
         id: 1,
         name: 'One',

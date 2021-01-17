@@ -1,4 +1,4 @@
-export interface IEditableTemplate {
+export interface ITemplate {
     id: number;
     name: string;
     template: string;

@@ -2,8 +2,11 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+import { mockServerUrl } from '../app/consts/mock-server-url.const';
+
 export const environment = {
-  production: false
+  production: false,
+  serverUrl: mockServerUrl,
 };
 
 /*
