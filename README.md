@@ -1,3 +1,8 @@
+# Run project:
+
+Run `npm install && npm start`
+then navigate to `http://localhost:4200/`
+
 # EditableTemplates
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.21.
