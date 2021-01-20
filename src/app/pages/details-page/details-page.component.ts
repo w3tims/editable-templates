@@ -9,10 +9,11 @@ import {
 } from '@angular/core';
 import { TemplatesStateService } from '../../services/templates-state.service';
 import { ActivatedRoute } from '@angular/router';
-import { delayWhen, filter, map, mergeMap, tap } from 'rxjs/operators';
+import { delayWhen, filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import { RouteKey } from '../../typings/enums/route-key.enum';
 import { BehaviorSubject, fromEvent, Subscription } from 'rxjs';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ITemplate } from '../../typings/interfaces/template.interface';
 
 @Component({
   selector: 'app-details-page',
@@ -24,6 +25,7 @@ export class DetailsPageComponent implements OnInit, AfterViewInit, AfterViewChe
   subscriptions: Subscription[] = [];
 
   viewChecked$ = new EventEmitter();
+  template$ = new BehaviorSubject<ITemplate>(null);
   selectedElement$ = new BehaviorSubject<HTMLElement>(null);
 
   textControl = new FormControl('');
@@ -41,11 +43,6 @@ export class DetailsPageComponent implements OnInit, AfterViewInit, AfterViewChe
     filter(templateId => Boolean(templateId)),
   );
 
-  selectedTemplate$ = this.templateId$.pipe(
-    mergeMap(templateId => this.templatesStateService.getTemplateById$(templateId)),
-    filter(selectedTemplate => Boolean(selectedTemplate))
-  );
-
   constructor(
     private templatesStateService: TemplatesStateService,
     private activatedRoute: ActivatedRoute,
@@ -54,28 +51,39 @@ export class DetailsPageComponent implements OnInit, AfterViewInit, AfterViewChe
   ngOnInit() {
     this.templatesStateService.loadTemplates(false);
     this.subscriptions.push(
+
+      this.templateId$.pipe(
+        mergeMap(templateId => this.templatesStateService.getTemplateById$(templateId)),
+        tap(template => this.template$.next(template)),
+        filter(template => Boolean(template)),
+        first(),
+      ).subscribe(),
+
       this.selectedElement$.pipe(
         tap(selectedElement => this.updateEditPanelFormValue(selectedElement))
       ).subscribe(),
 
-      this.editPanelForm.valueChanges
-        .pipe(
-          tap(({text, fontSize}) => {
-            this.selectedElement$.value.innerText = text;
+      this.editPanelForm.valueChanges.pipe(
+          tap(({ text, fontSize }) => {
+
+            this.selectedElement$.value.innerHTML = text;
             if (fontSize) {
               this.selectedElement$.value
                 .setAttribute('style', `font-size: ${fontSize}px`);
             }
-            console.log('save:', (this.templateContainer.nativeElement as HTMLElement).innerHTML);
-          })
-        )
-        .subscribe()
-
+          }),
+          mergeMap(() => {
+            const innerHtml = (this.templateContainer.nativeElement as HTMLElement).innerHTML;
+            return this.templatesStateService.editTemplate$({ ...this.template$.value, template: innerHtml });
+          }),
+      ).subscribe()
     );
+
   }
 
   ngAfterViewInit() {
-    this.selectedTemplate$.pipe(
+    this.template$.pipe(
+      filter(template => Boolean(template)),
       delayWhen(() => this.viewChecked$),
       tap(() => this.enableEditing())
     ).subscribe();
@@ -91,40 +99,17 @@ export class DetailsPageComponent implements OnInit, AfterViewInit, AfterViewChe
         .getPropertyValue('font-size')
         .split('px')[0];
       const text = selectedElement.innerText;
-      this.editPanelForm.patchValue({fontSize, text});
+      this.editPanelForm.patchValue({fontSize, text}, { emitEvent: false });
     } else {
-      this.editPanelForm.patchValue({fontSize: null, text: null});
+      this.editPanelForm.patchValue({fontSize: null, text: null}, { emitEvent: false });
     }
   }
 
   enableEditing() {
-    // console.log('this.templateContainer.nativeElement', this.templateContainer.nativeElement);
-    // const htmlContainer = this.templateContainer.nativeElement as HTMLElement;
-    // const aa = const htmlContainer = this.templateContainer
     const editableElements = this.templateContainer.nativeElement.querySelectorAll('.editable');
-    editableElements.forEach((elem: HTMLElement) => fromEvent(elem, 'click').subscribe(
-      clickEvent => {
-        console.log('clicked!!', clickEvent);
-        this.selectedElement$.next(elem);
-      }
-    ));
-
-      // .forEach((elem: HTMLElement) => {
-      //   elem.contentEditable = 'true';
-      //   // console.log('element:', elem);
-      //   // const factory = this.componentFactoryResolver.resolveComponentFactory(PanelComponent);
-      //   // const component = factory.create(this.injector);
-      //   //
-      //   // console.log('component', component);
-      //   // elem.appendChild(component);
-      //
-      //
-      //
-      //   // const componentFactory = this.componentFactoryResolver.resolveComponentFactory(KFTooltipComponent);
-      //   // this.tooltipComponent = componentFactory.create(this.injector);
-      //   // this.applicationRef.attachView(this.tooltipComponent.hostView);
-      //   // document.body.appendChild(this.tooltipComponent.location.nativeElement);
-      // });
+    editableElements
+      .forEach((elem: HTMLElement) => fromEvent(elem, 'click')
+      .subscribe(clickEvent => { this.selectedElement$.next(elem); }));
   }
 
 }

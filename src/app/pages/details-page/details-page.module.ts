@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { DetailsPageComponent } from './details-page.component';
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SafePipe } from './safe.pipe';
 
 
 
 @NgModule({
-  declarations: [DetailsPageComponent],
+  declarations: [DetailsPageComponent, SafePipe],
   imports: [
     CommonModule,
     ReactiveFormsModule,

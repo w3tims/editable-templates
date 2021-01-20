@@ -17,7 +17,7 @@ export class TemplatesStateService {
   templatesLoadingSuccess$ = new BehaviorSubject(false);
   templatesLoadingError$ = new BehaviorSubject(null);
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   loadTemplates(reloadIfLoaded = false) {
     if (!reloadIfLoaded && this.templatesLoadingSuccess$.value) {
@@ -53,6 +53,16 @@ export class TemplatesStateService {
     return this.templates$.pipe(
       map(templates => templates.find(template => template.id === +id))
     );
+  }
+
+  editTemplate$(template: ITemplate): Observable<ITemplate> {
+    return this.http.patch<ITemplate>(environment.serverUrl, template)
+      .pipe(
+        first(),
+        tap(templateEdited => this.templates$.next(
+          this.templates$.value.map(someTemplate => someTemplate.id === templateEdited.id ? templateEdited : someTemplate)
+        ))
+      );
   }
 
 }

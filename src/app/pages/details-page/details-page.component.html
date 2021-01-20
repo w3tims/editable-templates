@@ -1,18 +1,26 @@
-<div class="container">
-    <div *ngIf="selectedTemplate$ | async; let selectedTemplate">
-        <div class="heading">
-            <div class="back-arrow" [routerLink]="'/'">◄</div>
-            <h1>{{selectedTemplate.name}}</h1>
-        </div>
-        <div #templateContainer [innerHTML]="selectedTemplate.template"></div>
+<div class="container pt-4">
 
-        <form [formGroup]="editPanelForm" *ngIf="selectedElement$ | async; let selectedElement" >
-            <textarea formControlName="text" name="" id="" cols="30" rows="10"></textarea>
-            <div>
-                <span>font-size:</span>
-                <input formControlName="fontSize" type="number" min="0" max="100">
+    <div *ngIf="template$ | async; let selectedTemplate">
+
+        <div class="heading">
+            <a [routerLink]="'/'" class="mb-3 d-block back-button">Back to templates</a>
+            <h3>Template "{{selectedTemplate.name}}":</h3>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="template-container p-3" #templateContainer [innerHTML]="selectedTemplate.template | safe:'html'"></div>
             </div>
-        </form>
+            <div class="col-md-6">
+                <form class="edit-panel-form" [formGroup]="editPanelForm" *ngIf="selectedElement$ | async; let selectedElement" >
+                    <label class="input-label" for="templateTextInput">Text:</label>
+                    <textarea id="templateTextInput" formControlName="text" cols="30" rows="4"></textarea>
+                    <label class="input-label" for="templateFontSizeInput">Font-size:</label>
+                    <input id="templateFontSizeInput" formControlName="fontSize" type="number" min="0" max="100">
+                </form>
+            </div>
+        </div>
 
     </div>
+
 </div>

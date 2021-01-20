@@ -1,8 +1,16 @@
-<div class="container">
-    <h1>Templates:</h1>
-    <div *ngIf="templatesLoading$ | async">Loading...</div>
-    <div *ngIf="templatesLoadingError$ | async">Error! {{templatesLoadingError$}}</div>
-    <div *ngIf="templatesLoadingSuccess$ | async">
-        <div class="link" *ngFor="let template of (templates$ | async)" [routerLink]="template.id"><strong>{{template.name}}</strong></div>
+<div class="container pt-4">
+    <div class="mb-3 back-button">Templates</div>
+    <h3 class="mb-3">Click to preview:</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <div *ngIf="templatesLoading$ | async">Loading...</div>
+            <div *ngIf="templatesLoadingError$ | async; let err">Error! {{getErrorText(err)}}</div>
+            <ul class="templates-list" *ngIf="templatesLoadingSuccess$ | async">
+                <li class="link p-3 mb-3" *ngFor="let template of (templates$ | async)">
+                    <a [routerLink]="template.id">{{template.name}}</a>
+                    <div>{{getReadableDateTimeFromUtc(template.modified)}}</div>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>

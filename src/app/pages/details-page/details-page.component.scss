@@ -11,3 +11,27 @@
     cursor: pointer;
   }
 }
+
+.edit-panel-form {
+  border: 1px solid black;
+  padding: 1rem;
+}
+
+label.input-label {
+  display: block;
+}
+
+:host::ng-deep.editable {
+  cursor: pointer;
+}
+
+.back-button {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.template-container {
+  border: 1px solid;
+}

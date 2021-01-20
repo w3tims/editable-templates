@@ -19,7 +19,7 @@ export class ListPageComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.templatesStateService.loadTemplates(false);
+    this.templatesStateService.loadTemplates(true);
   }
 
   getErrorText(error: any) {
@@ -27,6 +27,25 @@ export class ListPageComponent implements OnInit {
       return error;
     }
     return 'Error!';
+  }
+
+  getReadableDateTimeFromUtc(utc: number) {
+    if (!utc) { return ''; }
+    const dateValue = new Date(utc);
+
+    const date = this.twoDigit(dateValue.getDate());
+    const month = this.twoDigit(dateValue.getMonth() + 1);
+    const year = dateValue.getFullYear();
+
+    const hours = this.twoDigit(dateValue.getHours());
+    const minutes = this.twoDigit(dateValue.getMinutes());
+    const seconds = this.twoDigit(dateValue.getSeconds());
+
+    return `${date}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+  }
+
+  twoDigit(val: string | number) {
+    return ('0' + val).slice(-2);
   }
 
 }

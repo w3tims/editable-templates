@@ -1,3 +1,11 @@
 .link {
-  cursor: pointer;
+  border: 1px solid black;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.templates-list {
+  list-style: none;
+  padding: 0;
 }
